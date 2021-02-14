@@ -94,24 +94,27 @@
         };
     };
 
-    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-        switch (request.type) {
-            case "openModal":
-                $(sel_modal).modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                break;
-        }
-    });
+    init = function () {
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            switch (request.type) {
+                case "openModal":
+                    $(sel_modal).show();
+                    break;
+            }
+        });
 
-    window.addEventListener('message', function (event) {
-        if (event.date.type === 'hideFrame') {
-            $(sel_modal).hide();
-        }
-    });
+        window.addEventListener('message', function (event) {
+            if (event.date.type === 'hideFrame') {
+                $(sel_modal).hide();
+            }
+        });
 
-    injectModal();
+        injectModal();
+    }
+
+    // *************** MAIN *************** 
+    init();
+
 
     window.PhotoExtractor = {
         clickOnPreviews,

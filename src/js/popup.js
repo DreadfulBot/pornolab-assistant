@@ -7,11 +7,9 @@ const clickHandler = (element) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         let currentTab = tabs[0];
 
-        let code = `window.PhotoExtractor.${command}();`;
-
         chrome.tabs.executeScript(
             currentTab.id,
-            { code },
+            { code: `window.PhotoExtractor.${command}();` },
         );
     });
 }
