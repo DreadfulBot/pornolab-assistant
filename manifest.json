@@ -1,0 +1,38 @@
+{
+    "name": "Pornolab assistant",
+    "version": "1.0",
+    "description": "https://github.com/DreadfulBot/pornolab-assistant",
+    "background": {
+        "persistent": false,
+        "page": "src/html/background.html"
+    },
+    "permissions": [
+        "activeTab", "declarativeContent", "storage",
+        "https://*/*", "http://*/*"
+    ],
+    "content_scripts": [{
+        "matches": ["*://pornolab.net/*"],
+        "css": ["src/css/bootstrap.min.css", "src/css/modal.css"],
+        "js": ["src/js/lib/jquery-3.5.1.min.js", "src/js/lib/bootstrap.min.js", "src/js/sources/pornolab.js"],
+        "run_at": "document_end"
+    }],
+    "page_action": {
+        "default_popup": "src/html/popup.html",
+        "default_icon": {
+            "16": "images/get_started16.png",
+            "32": "images/get_started32.png",
+            "48": "images/get_started48.png",
+            "128": "images/get_started128.png"
+        }
+    },
+    "icons": {
+        "16": "images/get_started16.png",
+        "32": "images/get_started32.png",
+        "48": "images/get_started48.png",
+        "128": "images/get_started128.png"
+    },
+    "manifest_version": 2,
+    "web_accessible_resources": [
+        "src/js/*", "src/html/*", "src/css/*"
+    ]
+}
