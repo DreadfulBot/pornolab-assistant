@@ -1,6 +1,5 @@
 var buttons = document.querySelectorAll('button');
 let bgk = chrome.extension.getBackgroundPage();
-const { showModal, hideModal } = bgk;
 
 const clickHandler = (element) => {
     var command = element.target.getAttribute('data-command');
