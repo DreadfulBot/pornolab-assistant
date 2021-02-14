@@ -3,8 +3,6 @@
     sel_main_spoilers = '#topic_main .clickable';
     sel_preview_link = '#topic_main .sp-body.inited .postLink'
     modal_id = 'modal-1';
-    frame_id = 'frame-1';
-    sel_frame = `#${frame_id}`;
     sel_modal = `#${modal_id}`;
     sel_poster = `img#poster`;
     sel_title = `h5#title`;
