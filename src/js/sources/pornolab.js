@@ -25,7 +25,7 @@
                     <p id="info"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="close-button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
         var links = document.querySelectorAll('a[href*="' + hostname + '"]');
         var req = new XMLHttpRequest();
         links.forEach((l) => {
-            l.addEventListener("mouseover", (e) => {
+            l.addEventListener('mouseover', (e) => {
                 var url = e.target.href;
                 req = new XMLHttpRequest();
                 req.onload = () => {
@@ -59,7 +59,7 @@
                 req.open('GET', url, true);
                 req.send();
             });
-            l.addEventListener("mouseout", () => {
+            l.addEventListener('mouseout', () => {
                 req.abort();
                 bindDataToModal(null);
                 $(sel_modal).hide();
@@ -97,15 +97,19 @@
     init = function () {
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             switch (request.type) {
-                case "openModal":
+                case 'openModal':
                     $(sel_modal).show();
                     break;
             }
         });
 
         window.addEventListener('message', function (event) {
-            if (event.date.type === 'hideFrame') {
-                $(sel_modal).hide();
+            const { data: { type } } = event;
+            switch (type) {
+                case 'hideModal': {
+                    $(sel_modal).hide();
+                    break;
+                }
             }
         });
 
