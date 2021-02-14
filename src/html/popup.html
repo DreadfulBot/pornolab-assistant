@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<style>
-			button {
-				min-width: 30px;
-				min-width: 30px;
-				outline: none;
-			}
-		</style>
+		<link rel="stylesheet" href="../css/lib/bootstrap.min.css"/>
+		<link rel="stylesheet" href="../css/popup.css"/>
 	</head>
 	<body>
-		<div class="content">
-			<button id="add-preview-popup" data-command="addPreviewPopup">Add Preview Popup</button>
-			<button id="click-on-previews" data-command="clickOnPreviews">Click on Previews</button>
-			<button id="open-spoilers" data-command="openSpoilers">Open Spoilers</button>
+		<div class="card">
+			<div class="card-body">
+				<button id="add-preview-popup" class="btn btn-primary" data-command="addPreviewPopup">Add Preview Popup</button>
+				<button id="click-on-previews" class="btn btn-primary" data-command="clickOnPreviews">Click on Previews</button>
+				<button id="open-spoilers" class="btn btn-primary" data-command="openSpoilers">Open Spoilers</button>
+			</div>
 
 			<script src="../js/popup.js" type="module"></script>
 		</div>
