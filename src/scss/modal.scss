@@ -6,4 +6,10 @@
         max-width: 400px;
         height: auto;
     }
+    .modal-body {
+        img#preloader {
+            display: block;
+            margin: 0 auto;
+        }
+    }
 }

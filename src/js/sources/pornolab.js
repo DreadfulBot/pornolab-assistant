@@ -5,10 +5,12 @@
     modal_id = 'modal-1';
     sel_modal = `#${modal_id}`;
     sel_poster = `img#poster`;
+    sel_preloader = `img#preloader`;
     sel_title = `h5#title`;
     sel_info = `p#info`;
 
     injectModal = function () {
+        var preloaderUrl = chrome.extension.getURL('images/preloader.gif');
 
         var markup = $(`
             <div class="modal-window" id="modal-1" tabindex="-1" role="dialog">
@@ -21,6 +23,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <img id="preloader" src="${preloaderUrl}" />
                     <img id="poster" src="" />
                     <p id="info"></p>
                 </div>
@@ -32,7 +35,8 @@
             </div>
         `);
 
-        var el = $(markup).appendTo('body')
+        var el = $(markup).appendTo('body');
+        $(el).find(sel_preloader).hide();
         $(el).hide();
     };
 
@@ -45,30 +49,47 @@
     };
 
     addPreviewPopup = function () {
-        var links = document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"]');
-        var req = new XMLHttpRequest();
+        var links = document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"], a[href^="viewtopic.php"]');
+        var loadRequest = new XMLHttpRequest();
+        var timer;
         links.forEach((l) => {
             l.addEventListener('mouseover', (e) => {
-                var url = e.target.href;
-                req = new XMLHttpRequest();
-                req.onload = () => {
-                    bindDataToModal(extractPopupData(req));
-                    $(sel_modal).show();
-                };
-                req.responseType = 'document';
-                req.open('GET', url, true);
-                req.send();
+                bindDataToModal({ isLoading: true });
+                $(sel_modal).show();
+                timer = setTimeout(() => {
+                    var url = e.target.href;
+                    loadRequest = new XMLHttpRequest();
+                    loadRequest.onload = () => {
+                        bindDataToModal(extractPopupData(loadRequest));
+                        $(sel_modal).show();
+                    };
+                    loadRequest.responseType = 'document';
+                    loadRequest.open('GET', url, true);
+                    loadRequest.send();
+                }, 200)
             });
             l.addEventListener('mouseout', () => {
-                req.abort();
+                clearTimeout(timer);
+                loadRequest.abort();
                 bindDataToModal(null);
                 $(sel_modal).hide();
             });
         });
     };
 
+    togglePreloader = function (isLoading) {
+        if (isLoading) {
+            $(sel_modal).find(sel_preloader).show();
+        } else {
+            $(sel_modal).find(sel_preloader).hide();
+        }
+    }
+
     bindDataToModal = function (data) {
-        const { poster, title } = data || { poster: '', title: '' };
+        const { poster, title, isLoading } = data ||
+            { poster: '', title: '', isLoading: false };
+
+        togglePreloader(isLoading);
 
         $(sel_modal).find(sel_info).text('');
         $(sel_modal).find(sel_poster).attr('src', poster);
@@ -76,7 +97,7 @@
 
         let valueExists = !!data && Object.entries(data).find(([k, v]) => !!v);
 
-        if (!valueExists) {
+        if (!valueExists && !isLoading) {
             $(sel_modal).find(sel_info).text('Unable to load data');
         }
     };
@@ -90,7 +111,8 @@
 
         return {
             poster,
-            title
+            title,
+            isLoading: false
         };
     };
 

@@ -1,6 +1,6 @@
 {
     "name": "Pornolab assistant",
-    "version": "1.2",
+    "version": "1.3",
     "description": "https://github.com/DreadfulBot/pornolab-assistant",
     "background": {
         "persistent": false,
@@ -33,6 +33,6 @@
     },
     "manifest_version": 2,
     "web_accessible_resources": [
-        "src/js/*", "src/html/*", "src/css/*"
+        "src/js/*", "src/html/*", "src/css/*", "images/*"
     ]
 }
