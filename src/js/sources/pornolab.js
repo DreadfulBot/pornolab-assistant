@@ -45,7 +45,7 @@
     };
 
     addPreviewPopup = function () {
-        var links = document.querySelectorAll('a[href*="' + hostname + '"]');
+        var links = document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"]');
         var req = new XMLHttpRequest();
         links.forEach((l) => {
             l.addEventListener('mouseover', (e) => {
