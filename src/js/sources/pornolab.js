@@ -1,15 +1,17 @@
-(function () {
-    hostname = 'pornolab.net';
-    sel_main_spoilers = '#topic_main .clickable';
-    sel_preview_link = '#topic_main .sp-body.inited .postLink'
-    modal_id = 'modal-1';
-    sel_modal = `#${modal_id}`;
-    sel_poster = `img#poster`;
-    sel_preloader = `img#preloader`;
-    sel_title = `h5#title`;
-    sel_info = `p#info`;
+import { getStorageFactory } from "./screenshot_storages/screenshot_storage_factory";
 
-    injectModal = function () {
+(function () {
+    const hostname = 'pornolab.net';
+    const sel_main_spoilers = '#topic_main .clickable';
+    const sel_preview_link = '#topic_main .sp-body.inited .postLink'
+    const modal_id = 'modal-1';
+    const sel_modal = `#${modal_id}`;
+    const sel_poster = `img#poster`;
+    const sel_preloader = `img#preloader`;
+    const sel_title = `h5#title`;
+    const sel_info = `p#info`;
+
+    const injectModal = function () {
         var preloaderUrl = chrome.extension.getURL('images/preloader.gif');
 
         var markup = $(`
@@ -40,18 +42,18 @@
         $(el).hide();
     };
 
-    openSpoilers = function () {
+    const openSpoilers = function () {
         document.querySelectorAll(sel_main_spoilers).forEach(x => x.click());
     };
 
-    clickOnPreviews = function () {
+    const clickOnPreviews = function () {
         document.querySelectorAll(sel_preview_link).forEach(x => x.click());
     };
 
-    addPreviewPopup = function () {
+    const addPreviewPopup = function () {
         var links = document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"], a[href^="viewtopic.php"]');
-        var loadRequest = new XMLHttpRequest();
-        var timer;
+        let loadRequest = new XMLHttpRequest();
+        let timer;
         links.forEach((l) => {
             l.addEventListener('mouseover', (e) => {
                 bindDataToModal({ isLoading: true });
@@ -77,7 +79,7 @@
         });
     };
 
-    togglePreloader = function (isLoading) {
+    const togglePreloader = function (isLoading) {
         if (isLoading) {
             $(sel_modal).find(sel_preloader).show();
         } else {
@@ -85,7 +87,7 @@
         }
     }
 
-    bindDataToModal = function (data) {
+    const bindDataToModal = function (data) {
         const { poster, title, isLoading } = data ||
             { poster: '', title: '', isLoading: false };
 
@@ -102,7 +104,7 @@
         }
     };
 
-    extractPopupData = function (response) {
+    const extractPopupData = function (response) {
         var xml = response.responseXML;
         var poster = xml ? xml.querySelector('#topic_main .postImg') : '';
         poster = poster ? poster.title : '';
@@ -116,7 +118,21 @@
         };
     };
 
-    init = function () {
+    const injectImages = function () {
+        openSpoilers();
+        const foundImages = document.querySelectorAll('.sp-wrap .postLink');
+        foundImages.forEach(async (image) => {
+            var url = image.href;
+            const fullImageUrl = await getStorageFactory(url).extractImage(url);
+
+            const img = document.createElement('img');
+            img.src = fullImageUrl;
+            img.style.maxWidth = '100%';
+            image.replaceWith(img);
+        })
+    };
+
+    const init = function () {
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             switch (request.type) {
                 case 'openModal':
@@ -146,5 +162,6 @@
         clickOnPreviews,
         openSpoilers,
         addPreviewPopup,
+        injectImages
     };
 }())

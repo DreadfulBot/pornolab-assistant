@@ -1,4 +1,5 @@
 .vscode
+node_modules
 images/readme/popup/**/*
 !images/readme/popup/popup.png
 !images/readme/popup/popup.gif

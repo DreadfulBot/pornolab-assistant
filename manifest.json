@@ -7,15 +7,29 @@
         "page": "src/html/background.html"
     },
     "permissions": [
-        "activeTab", "declarativeContent", "storage",
-        "https://*/*", "http://*/*"
+        "activeTab",
+        "declarativeContent",
+        "storage",
+        "https://*/*",
+        "http://*/*"
     ],
-    "content_scripts": [{
-        "matches": ["*://pornolab.net/*"],
-        "css": ["src/css/lib/bootstrap.min.css", "src/css/modal.css"],
-        "js": ["src/js/lib/jquery-3.5.1.min.js", "src/js/lib/bootstrap.min.js", "src/js/sources/pornolab.js"],
-        "run_at": "document_end"
-    }],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://pornolab.net/*"
+            ],
+            "css": [
+                "src/css/lib/bootstrap.min.css",
+                "src/css/modal.css"
+            ],
+            "js": [
+                "dist/lib/jquery-3.5.1.min.js",
+                "dist/lib/bootstrap.min.js",
+                "dist/pornolab.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
     "page_action": {
         "default_popup": "src/html/popup.html",
         "default_icon": {
@@ -33,6 +47,10 @@
     },
     "manifest_version": 2,
     "web_accessible_resources": [
-        "src/js/*", "src/html/*", "src/css/*", "images/*"
+        "dist/lib/*",
+        "dist/*",
+        "src/html/*",
+        "src/css/*",
+        "images/*"
     ]
 }

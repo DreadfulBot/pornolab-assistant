@@ -12,3 +12,21 @@ chrome.runtime.onInstalled.addListener(function () {
         }]);
     });
 });
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        if (request.contentScriptType == 'queryCors') {
+            var url = request.url;
+
+            const headers = {
+                'Content-Type': 'text/plain; charset=utf-8',
+            };
+
+            fetch(url, { headers })
+                .then(response => response.text())
+                .then(response => sendResponse(response))
+                .catch(error => alert('chrome.runtime.onMessage CORS error'));
+
+            return true;
+        }
+    }
+)
