@@ -50,8 +50,44 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
         document.querySelectorAll(sel_preview_link).forEach(x => x.click());
     };
 
+    const findPostLinks = function () {
+        return document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"], a[href^="viewtopic.php"]');
+    };
+
+    const loadXmlRequest = function (url, onLoad, onError, method = 'GET', responseType = 'document') {
+        let loadRequest = new XMLHttpRequest();
+        loadRequest.onload = onLoad;
+        loadRequest.onerror = onError;
+        loadRequest.responseType = responseType;
+        loadRequest.open(method, url, true);
+        loadRequest.send();
+        return loadRequest;
+    }
+
+    const injectPreviewsColumn = function () {
+        const rows = document.querySelectorAll('table.forumline tbody tr')
+        rows.forEach(x => {
+            const tds = x.querySelectorAll('td');
+            if (tds.length <= 4) {
+                return;
+            } else {
+                const link = tds[3].querySelector('a');
+
+                const loadRequest = loadXmlRequest(link, function () {
+                    const extractedData = extractPopupData(loadRequest);
+                    const poster = document.createElement('img');
+                    poster.src = extractedData.poster;
+                    const newTd = document.createElement('td');
+                    newTd.appendChild(poster);
+                    tds[3].prepend(newTd);
+                });
+            }
+        });
+    };
+
+
     const addPreviewPopup = function () {
-        var links = document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"], a[href^="viewtopic.php"]');
+        const links = findPostLinks();
         let loadRequest = new XMLHttpRequest();
         let timer;
         links.forEach((l) => {
@@ -60,14 +96,10 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
                 $(sel_modal).show();
                 timer = setTimeout(() => {
                     var url = e.target.href;
-                    loadRequest = new XMLHttpRequest();
-                    loadRequest.onload = () => {
+                    loadRequest = loadXmlRequest(url, function () {
                         bindDataToModal(extractPopupData(loadRequest));
                         $(sel_modal).show();
-                    };
-                    loadRequest.responseType = 'document';
-                    loadRequest.open('GET', url, true);
-                    loadRequest.send();
+                    })
                 }, 200)
             });
             l.addEventListener('mouseout', () => {
@@ -162,6 +194,7 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
         clickOnPreviews,
         openSpoilers,
         addPreviewPopup,
-        injectImages
+        injectImages,
+        injectPreviewsColumn
     };
 }())

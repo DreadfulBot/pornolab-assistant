@@ -7,7 +7,7 @@ export class BasicStorage {
         return response;
     }
     async loadHtml(url) {
-        const text = this.loadText(url);
+        const text = await this.loadText(url);
         const parser = new DOMParser();
         const html = parser.parseFromString(text, 'text/html');
         return html;
