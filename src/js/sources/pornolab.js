@@ -153,6 +153,11 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
     const injectImages = function () {
         openSpoilers();
         const foundImages = document.querySelectorAll('.sp-wrap .postLink');
+
+        if (foundImages && foundImages.length > 0) {
+            foundImages[0].scrollIntoView();
+        }
+
         foundImages.forEach(async (image) => {
             var url = image.href;
             const fullImageUrl = await getStorageFactory(url).extractImage(url);
@@ -162,6 +167,7 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
             img.style.maxWidth = '100%';
             image.replaceWith(img);
         })
+
     };
 
     const init = function () {
