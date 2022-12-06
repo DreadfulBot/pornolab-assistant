@@ -68,10 +68,16 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
         const rows = document.querySelectorAll('table.forumline tbody tr')
         rows.forEach(x => {
             const tds = x.querySelectorAll('td')
-            if (tds.length <= 4) {
+
+            const isTrackerSearch = tds.length === 11
+            const isForumSearch = tds.length === 6
+
+            if (!isTrackerSearch && !isForumSearch) {
                 return
             } else {
-                const link = tds[3].querySelector('a')
+                const tdToWork = isTrackerSearch ? 3 : 2
+
+                const link = tds[tdToWork].querySelector('a')
 
                 const loadRequest = loadXmlRequest(link, function () {
                     const extractedData = extractPopupData(loadRequest)
@@ -79,7 +85,7 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
                     poster.src = extractedData.poster
                     const newTd = document.createElement('td')
                     newTd.appendChild(poster)
-                    tds[3].prepend(newTd)
+                    tds[tdToWork].prepend(newTd)
                 })
             }
         })
