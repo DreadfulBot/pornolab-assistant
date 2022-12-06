@@ -81,10 +81,30 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
 
                 const loadRequest = loadXmlRequest(link, function () {
                     const extractedData = extractPopupData(loadRequest)
+                    const injectImagesLink = link + '&injectImages=true'
+                    const newTd = document.createElement('td')
+
+                    const posterWrapper = document.createElement('a')
+                    posterWrapper.target = '_blank'
+                    posterWrapper.href = injectImagesLink
+                    newTd.appendChild(posterWrapper)
+
                     const poster = document.createElement('img')
                     poster.src = extractedData.poster
-                    const newTd = document.createElement('td')
-                    newTd.appendChild(poster)
+                    // poster.style.width = '200px'
+                    posterWrapper.appendChild(poster)
+
+                    newTd.appendChild(document.createElement('br'))
+
+                    const openInjectedButton = document.createElement('a')
+                    openInjectedButton.target = '_blank'
+                    openInjectedButton.innerText = 'Open with images injected'
+                    openInjectedButton.classList.add('btn')
+                    openInjectedButton.classList.add('btn-info')
+                    openInjectedButton.href = link + '&injectImages=true'
+
+                    newTd.appendChild(openInjectedButton)
+
                     tds[tdToWork].prepend(newTd)
                 })
             }
@@ -177,6 +197,13 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
     }
 
     const init = function () {
+        const searchParams = new URLSearchParams(window.location.search)
+        const toInjectImages = searchParams.get('injectImages')
+
+        if (toInjectImages) {
+            injectImages()
+        }
+
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             switch (request.type) {
                 case 'openModal':
