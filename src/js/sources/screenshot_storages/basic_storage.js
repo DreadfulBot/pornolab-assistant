@@ -4,16 +4,16 @@ export class BasicStorage {
             chrome.runtime.sendMessage({ contentScriptType: 'queryCors', url }, response => resolve(response))
         })
 
-        return response;
+        return response
     }
     async loadHtml(url) {
-        const text = await this.loadText(url);
-        const parser = new DOMParser();
-        const html = parser.parseFromString(text, 'text/html');
-        return html;
-    };
+        const text = await this.loadText(url)
+        const parser = new DOMParser()
+        const html = parser.parseFromString(text, 'text/html')
+        return html
+    }
 
     extractImage(data) {
-        throw new Error('not implemented');
+        throw new Error('not implemented')
     }
 }

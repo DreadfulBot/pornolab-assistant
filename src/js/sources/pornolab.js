@@ -1,18 +1,18 @@
-import { getStorageFactory } from "./screenshot_storages/screenshot_storage_factory";
+import { getStorageFactory } from "./screenshot_storages/screenshot_storage_factory"
 
 (function () {
-    const hostname = 'pornolab.net';
-    const sel_main_spoilers = '#topic_main .clickable';
+    const hostname = 'pornolab.net'
+    const sel_main_spoilers = '#topic_main .clickable'
     const sel_preview_link = '#topic_main .sp-body.inited .postLink'
-    const modal_id = 'modal-1';
-    const sel_modal = `#${modal_id}`;
-    const sel_poster = `img#poster`;
-    const sel_preloader = `img#preloader`;
-    const sel_title = `h5#title`;
-    const sel_info = `p#info`;
+    const modal_id = 'modal-1'
+    const sel_modal = `#${modal_id}`
+    const sel_poster = `img#poster`
+    const sel_preloader = `img#preloader`
+    const sel_title = `h5#title`
+    const sel_info = `p#info`
 
     const injectModal = function () {
-        var preloaderUrl = chrome.extension.getURL('images/preloader.gif');
+        var preloaderUrl = chrome.extension.getURL('images/preloader.gif')
 
         var markup = $(`
             <div class="modal-window" id="modal-1" tabindex="-1" role="dialog">
@@ -21,7 +21,7 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
                 <div class="modal-header">
                     <h5 class="modal-title" id="title"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -35,165 +35,165 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
                 </div>
             </div>
             </div>
-        `);
+        `)
 
-        var el = $(markup).appendTo('body');
-        $(el).find(sel_preloader).hide();
-        $(el).hide();
-    };
+        var el = $(markup).appendTo('body')
+        $(el).find(sel_preloader).hide()
+        $(el).hide()
+    }
 
     const openSpoilers = function () {
-        document.querySelectorAll(sel_main_spoilers).forEach(x => x.click());
-    };
+        document.querySelectorAll(sel_main_spoilers).forEach(x => x.click())
+    }
 
     const clickOnPreviews = function () {
-        document.querySelectorAll(sel_preview_link).forEach(x => x.click());
-    };
+        document.querySelectorAll(sel_preview_link).forEach(x => x.click())
+    }
 
     const findPostLinks = function () {
-        return document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"], a[href^="viewtopic.php"]');
-    };
+        return document.querySelectorAll('a[href*="' + hostname + '"], a[href^="./"], a[href^="viewtopic.php"]')
+    }
 
     const loadXmlRequest = function (url, onLoad, onError, method = 'GET', responseType = 'document') {
-        let loadRequest = new XMLHttpRequest();
-        loadRequest.onload = onLoad;
-        loadRequest.onerror = onError;
-        loadRequest.responseType = responseType;
-        loadRequest.open(method, url, true);
-        loadRequest.send();
-        return loadRequest;
+        let loadRequest = new XMLHttpRequest()
+        loadRequest.onload = onLoad
+        loadRequest.onerror = onError
+        loadRequest.responseType = responseType
+        loadRequest.open(method, url, true)
+        loadRequest.send()
+        return loadRequest
     }
 
     const injectPreviewsColumn = function () {
         const rows = document.querySelectorAll('table.forumline tbody tr')
         rows.forEach(x => {
-            const tds = x.querySelectorAll('td');
+            const tds = x.querySelectorAll('td')
             if (tds.length <= 4) {
-                return;
+                return
             } else {
-                const link = tds[3].querySelector('a');
+                const link = tds[3].querySelector('a')
 
                 const loadRequest = loadXmlRequest(link, function () {
-                    const extractedData = extractPopupData(loadRequest);
-                    const poster = document.createElement('img');
-                    poster.src = extractedData.poster;
-                    const newTd = document.createElement('td');
-                    newTd.appendChild(poster);
-                    tds[3].prepend(newTd);
-                });
+                    const extractedData = extractPopupData(loadRequest)
+                    const poster = document.createElement('img')
+                    poster.src = extractedData.poster
+                    const newTd = document.createElement('td')
+                    newTd.appendChild(poster)
+                    tds[3].prepend(newTd)
+                })
             }
-        });
-    };
+        })
+    }
 
 
     const addPreviewPopup = function () {
-        const links = findPostLinks();
-        let loadRequest = new XMLHttpRequest();
-        let timer;
+        const links = findPostLinks()
+        let loadRequest = new XMLHttpRequest()
+        let timer
         links.forEach((l) => {
             l.addEventListener('mouseover', (e) => {
-                bindDataToModal({ isLoading: true });
-                $(sel_modal).show();
+                bindDataToModal({ isLoading: true })
+                $(sel_modal).show()
                 timer = setTimeout(() => {
-                    var url = e.target.href;
+                    var url = e.target.href
                     loadRequest = loadXmlRequest(url, function () {
-                        bindDataToModal(extractPopupData(loadRequest));
-                        $(sel_modal).show();
+                        bindDataToModal(extractPopupData(loadRequest))
+                        $(sel_modal).show()
                     })
                 }, 200)
-            });
+            })
             l.addEventListener('mouseout', () => {
-                clearTimeout(timer);
-                loadRequest.abort();
-                bindDataToModal(null);
-                $(sel_modal).hide();
-            });
-        });
-    };
+                clearTimeout(timer)
+                loadRequest.abort()
+                bindDataToModal(null)
+                $(sel_modal).hide()
+            })
+        })
+    }
 
     const togglePreloader = function (isLoading) {
         if (isLoading) {
-            $(sel_modal).find(sel_preloader).show();
+            $(sel_modal).find(sel_preloader).show()
         } else {
-            $(sel_modal).find(sel_preloader).hide();
+            $(sel_modal).find(sel_preloader).hide()
         }
     }
 
     const bindDataToModal = function (data) {
         const { poster, title, isLoading } = data ||
-            { poster: '', title: '', isLoading: false };
+            { poster: '', title: '', isLoading: false }
 
-        togglePreloader(isLoading);
+        togglePreloader(isLoading)
 
-        $(sel_modal).find(sel_info).text('');
-        $(sel_modal).find(sel_poster).attr('src', poster);
-        $(sel_modal).find(sel_title).text(title);
+        $(sel_modal).find(sel_info).text('')
+        $(sel_modal).find(sel_poster).attr('src', poster)
+        $(sel_modal).find(sel_title).text(title)
 
-        let valueExists = !!data && Object.entries(data).find(([k, v]) => !!v);
+        let valueExists = !!data && Object.entries(data).find(([k, v]) => !!v)
 
         if (!valueExists && !isLoading) {
-            $(sel_modal).find(sel_info).text('Unable to load data');
+            $(sel_modal).find(sel_info).text('Unable to load data')
         }
-    };
+    }
 
     const extractPopupData = function (response) {
-        var xml = response.responseXML;
-        var poster = xml ? xml.querySelector('#topic_main .postImg') : '';
-        poster = poster ? poster.title : '';
-        var title = xml ? xml.title : '';
-        title = title !== hostname ? title : '';
+        var xml = response.responseXML
+        var poster = xml ? xml.querySelector('#topic_main .postImg') : ''
+        poster = poster ? poster.title : ''
+        var title = xml ? xml.title : ''
+        title = title !== hostname ? title : ''
 
         return {
             poster,
             title,
             isLoading: false
-        };
-    };
+        }
+    }
 
     const injectImages = function () {
-        openSpoilers();
-        const foundImages = document.querySelectorAll('.sp-wrap .postLink');
+        openSpoilers()
+        const foundImages = document.querySelectorAll('.sp-wrap .postLink')
 
         if (foundImages && foundImages.length > 0) {
-            foundImages[0].scrollIntoView();
+            foundImages[0].scrollIntoView()
         }
 
         foundImages.forEach(async (image) => {
-            var url = image.href;
-            const fullImageUrl = await getStorageFactory(url).extractImage(url);
+            var url = image.href
+            const fullImageUrl = await getStorageFactory(url).extractImage(url)
 
-            const img = document.createElement('img');
-            img.src = fullImageUrl;
-            img.style.maxWidth = '100%';
-            image.replaceWith(img);
+            const img = document.createElement('img')
+            img.src = fullImageUrl
+            img.style.maxWidth = '100%'
+            image.replaceWith(img)
         })
 
-    };
+    }
 
     const init = function () {
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             switch (request.type) {
                 case 'openModal':
-                    $(sel_modal).show();
-                    break;
+                    $(sel_modal).show()
+                    break
             }
-        });
+        })
 
         window.addEventListener('message', function (event) {
-            const { data: { type } } = event;
+            const { data: { type } } = event
             switch (type) {
                 case 'hideModal': {
-                    $(sel_modal).hide();
-                    break;
+                    $(sel_modal).hide()
+                    break
                 }
             }
-        });
+        })
 
-        injectModal();
+        injectModal()
     }
 
     // *************** MAIN *************** 
-    init();
+    init()
 
 
     window.PhotoExtractor = {
@@ -202,5 +202,5 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
         addPreviewPopup,
         injectImages,
         injectPreviewsColumn
-    };
+    }
 }())
