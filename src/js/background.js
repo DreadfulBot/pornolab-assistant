@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener(
             fetch(url, { headers })
                 .then(response => response.text())
                 .then(response => sendResponse(response))
-                .catch(error => alert('chrome.runtime.onMessage CORS error'))
+                .catch(error => console.log('Pornolab chrome plugin: chrome.runtime.onMessage CORS error', error))
 
             return true
         }
