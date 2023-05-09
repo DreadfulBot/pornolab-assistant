@@ -164,7 +164,15 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
 
     const extractPopupData = function (response) {
         var xml = response.responseXML
-        var poster = xml ? xml.querySelector('#topic_main .postImg') : ''
+
+        var releaseImageRegex = /^((?!release).)*$/
+
+        var posterCandidates = xml ? Array.from(xml.querySelectorAll('#topic_main .postImg')) : [];
+
+        var filteredByRelease = posterCandidates.filter(x => x.title.match(releaseImageRegex));
+
+        var poster = filteredByRelease.length > 0 ? filteredByRelease[0] : ''
+
         poster = poster ? poster.title : ''
         var title = xml ? xml.title : ''
         title = title !== hostname ? title : ''
