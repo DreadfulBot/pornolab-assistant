@@ -9,7 +9,6 @@ export class ImgBoxStorage extends BasicStorage {
             const pageText = await this.loadText(url)
 
             const found = pageText.match(regex)
-            debugger
 
             if (!found || found.length === 0) {
                 throw new Error('unable to load big image')
