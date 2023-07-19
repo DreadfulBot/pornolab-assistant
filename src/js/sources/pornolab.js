@@ -213,7 +213,10 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
 
     const init = function () {
         const searchParams = new URLSearchParams(window.location.search)
+
         const toInjectImages = searchParams.get('injectImages')
+            || window.location.href.indexOf('injectImages') > -1
+
 
         if (toInjectImages) {
             injectImages()
@@ -242,7 +245,6 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
 
     // *************** MAIN *************** 
     init()
-
 
     window.PhotoExtractor = {
         clickOnPreviews,
