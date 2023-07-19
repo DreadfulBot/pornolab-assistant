@@ -66,20 +66,27 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
 
     const injectPreviewsColumn = function () {
         const rows = document.querySelectorAll('table.forumline tbody tr')
+
         rows.forEach(x => {
             const tds = x.querySelectorAll('td')
 
             const isTrackerSearch = tds.length === 11
             const isForumSearch = tds.length === 6
+            const isForumView = tds.length === 5
 
-            if (!isTrackerSearch && !isForumSearch) {
+            if (!isTrackerSearch && !isForumSearch && !isForumView) {
                 return
             } else {
-                const tdToWork = isTrackerSearch ? 3 : 2
+                const tdToWork = isTrackerSearch ? 3 : isForumSearch ? 2 : isForumView ? 1 : null
+
+
+                if (!tdToWork) {
+                    throw new Error('Cannot detect td to extract topic url from')
+                }
 
                 const link = tds[tdToWork].querySelector('a')
 
-                const loadRequest = loadXmlRequest(link, function () {
+                const loadRequest = loadXmlRequest(link.href, function () {
                     const extractedData = extractPopupData(loadRequest)
                     const injectImagesLink = link + '&injectImages=true'
                     const newTd = document.createElement('td')
