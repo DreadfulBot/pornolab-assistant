@@ -1,5 +1,6 @@
 .vscode
 node_modules
+readme_src
 images/readme/popup/**/*
 !images/readme/popup/popup.png
 !images/readme/popup/popup.gif
