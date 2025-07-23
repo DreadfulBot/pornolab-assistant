@@ -5,15 +5,19 @@ const path = require("path");
 const isProduction = process.env.NODE_ENV == "production";
 
 const config = {
-  entry: "./src/js/sources/pornolab.js",
+  entry: {
+    pornolab: "./src/js/sources/pornolab.js",
+    background: "./src/js/background.js"
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: 'pornolab.js'
+    filename: '[name].js'
   },
   plugins: [
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
+  devtool: false,
   module: {
     rules: [
       {

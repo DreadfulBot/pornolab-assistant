@@ -6,10 +6,13 @@ const clickHandler = (element) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         let currentTab = tabs[0]
 
-        chrome.tabs.executeScript(
-            currentTab.id,
-            { code: `window.PhotoExtractor.${command}()` },
-        )
+        chrome.scripting.executeScript({
+            target: { tabId: currentTab.id },
+            func: (cmd) => {
+                window.PhotoExtractor[cmd]()
+            },
+            args: [command]
+        })
     })
 }
 

@@ -12,7 +12,7 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
     const sel_info = `p#info`
 
     const injectModal = function () {
-        var preloaderUrl = chrome.extension.getURL('images/preloader.gif')
+        var preloaderUrl = chrome.runtime.getURL('images/preloader.gif')
 
         var markup = $(`
             <div class="modal-window" id="modal-1" tabindex="-1" role="dialog">
@@ -201,14 +201,27 @@ import { getStorageFactory } from "./screenshot_storages/screenshot_storage_fact
 
         foundImages.forEach(async (image) => {
             var url = image.href
-            const fullImageUrl = await getStorageFactory(url).extractImage(url)
-
-            const img = document.createElement('img')
-            img.src = fullImageUrl
-            img.style.maxWidth = '100%'
-            image.replaceWith(img)
+            // Request the image page via background script to bypass CORS
+            chrome.runtime.sendMessage({
+                contentScriptType: 'queryCors',
+                url: url
+            }, async function (responseText) {
+                const factory = getStorageFactory(url)
+                if (!factory) {
+                    console.log('Pornolab chrome plugin: Unable to get storage factory for', url)
+                    return
+                }
+                const fullImageUrl = await factory.extractImage(url, responseText)
+                if (fullImageUrl) {
+                    const img = document.createElement('img')
+                    img.src = fullImageUrl
+                    img.style.maxWidth = '100%'
+                    image.replaceWith(img)
+                } else {
+                    console.log('Pornolab chrome plugin: Unable to extract image', url)
+                }
+            })
         })
-
     }
 
     const init = function () {

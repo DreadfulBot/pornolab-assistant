@@ -1,24 +1,12 @@
-import { hostScriptMappings } from './sources/host_script_mappings.js'
-
-const conditions = Object.keys(hostScriptMappings).map(x => new chrome.declarativeContent.PageStateMatcher({
-    pageUrl: { hostEquals: x }
-}))
-
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-        chrome.declarativeContent.onPageChanged.addRules([{
-            conditions: conditions,
-            actions: [new chrome.declarativeContent.ShowPageAction()]
-        }])
-    })
-})
+// Removed chrome.declarativeContent usage for Manifest v3 compatibility
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.contentScriptType == 'queryCors') {
             var url = request.url
-
             const headers = {
                 'Content-Type': 'text/plain charset=utf-8',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': '*'
             }
 
             fetch(url, { headers })
@@ -26,7 +14,7 @@ chrome.runtime.onMessage.addListener(
                 .then(response => sendResponse(response))
                 .catch(error => console.log('Pornolab chrome plugin: chrome.runtime.onMessage CORS error', error))
 
-            return true
+            return true;
         }
     }
 )
